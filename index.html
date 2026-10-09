@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<meta name="robots" content="noindex,nofollow" />
+<meta name="googlebot" content="noindex,nofollow" />
+<meta name="copyright" content="© 2026 Stop60" />
+<meta name="theme-color" content="#07070f" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Hype &amp; Click" />
+<meta name="format-detection" content="telephone=no" />
+<title>Hype &amp; Click: Algorytm Sławy — wersja testowa</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23ff2bd6'/%3E%3Cstop offset='1' stop-color='%2322e5ff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='32' cy='32' r='30' fill='url(%23g)'/%3E%3Cpath d='M36 8 18 36h12l-4 20 20-30H34z' fill='%23fff'/%3E%3C/svg%3E" />
+<style>
+:root{
+  --bg:#07070f; --bg2:#0e0e1c; --panel:#121224; --panel2:#181833; --line:#2a2a4a;
+  --txt:#f1f0ff; --mut:#9a98c3; --cyan:#22e5ff; --mag:#ff2bd6; --vio:#8b5cff; --lime:#b6ff3b; --gold:#ffd23f; --red:#ff4d6d;
+  --sat:env(safe-area-inset-top,0px); --sab:env(safe-area-inset-bottom,0px); --sal:env(safe-area-inset-left,0px); --sar:env(safe-area-inset-right,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,Inter,system-ui,sans-serif;overscroll-behavior:none}
+body{overflow:hidden;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:manipulation;
+  background:radial-gradient(1200px 600px at 50% -10%,#2a1050 0%,transparent 60%),radial-gradient(900px 500px at 50% 110%,#06324a 0%,transparent 60%),var(--bg)}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-action:manipulation}
+#app{position:relative;margin:0 auto;max-width:520px;height:100vh;height:100dvh;display:flex;flex-direction:column;
+  padding:calc(6px + var(--sat)) calc(10px + var(--sar)) calc(4px + var(--sab)) calc(10px + var(--sal));overflow:hidden}
+@media (min-width:700px){#app{border-left:1px solid #1d1d36;border-right:1px solid #1d1d36;box-shadow:0 0 80px #8b5cff22}}
+/* header */
+#top{display:flex;align-items:center;gap:8px;min-height:44px}
+.brand{display:flex;flex-direction:column;line-height:1.05;min-width:0;flex:1}
+.brand b{font-size:17px;letter-spacing:.3px;background:linear-gradient(90deg,var(--mag),var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent;white-space:nowrap}
+.brand small{font-size:11px;color:var(--mut);letter-spacing:1.5px;text-transform:uppercase;white-space:nowrap}
+.testbadge{font-size:9.5px;font-weight:800;letter-spacing:1px;color:#111;background:var(--gold);padding:3px 6px;border-radius:6px;white-space:nowrap;box-shadow:0 0 12px #ffd23f66}
+.ibtn{min-width:38px;height:38px;border-radius:12px;background:var(--panel);border:1px solid var(--line);font-size:14px;font-weight:700;display:grid;place-items:center;padding:0 8px}
+.ibtn:active{transform:scale(.94)}
+/* stats */
+#stats{text-align:center;padding:4px 0 2px}
+#hype{font-size:clamp(30px,10vw,44px);font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:-.5px;line-height:1.05;text-shadow:0 0 18px #ff2bd655}
+#hypeUnit{font-size:12px;color:var(--mut);letter-spacing:2px;text-transform:uppercase}
+.rates{display:flex;justify-content:center;gap:8px;margin-top:4px;flex-wrap:wrap}
+.chip{font-size:12.5px;font-weight:700;padding:4px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line);font-variant-numeric:tabular-nums}
+.chip.c{color:var(--cyan)} .chip.m{color:var(--mag)} .chip.g{color:var(--gold)}
+#phase{margin:6px auto 0;font-size:11.5px;color:var(--mut);display:flex;flex-direction:column;align-items:center;gap:1px}
+#phase b{color:var(--lime);font-size:12px;letter-spacing:.5px}
+#phase.p3 b{color:var(--gold)}
+/* stage */
+#stage{position:relative;flex:0 0 auto;height:clamp(170px,30vh,270px);display:grid;place-items:center}
+#pubWrap{position:relative;width:min(48vw,27vh,230px);aspect-ratio:1}
+#pubWrap::before{content:"";position:absolute;inset:-10px;border-radius:50%;background:conic-gradient(from 0deg,var(--mag),var(--cyan),var(--vio),var(--mag));filter:blur(10px);opacity:.55;animation:spin 6s linear infinite}
+#pub{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ff7ae6 0%,#c21fd0 38%,#5b1fd6 75%,#2b0f73 100%);
+  box-shadow:inset 0 -10px 24px #0006,inset 0 8px 18px #ffffff33,0 10px 30px #ff2bd655;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transition:transform .08s ease-out;border:3px solid #ffffff22;touch-action:none}
+#pub .lbl{font-size:clamp(19px,6vw,26px);font-weight:900;letter-spacing:2px;text-shadow:0 2px 0 #0005}
+#pub .sub{font-size:12px;font-weight:700;opacity:.85;margin-top:2px;font-variant-numeric:tabular-nums}
+#pub .ico{font-size:clamp(22px,7vw,30px);line-height:1;margin-bottom:2px}
+#pub.press{transform:scale(.9,.86)}
+#pub:focus-visible{outline:3px solid var(--cyan);outline-offset:6px}
+.ring{position:absolute;left:50%;top:50%;width:100%;aspect-ratio:1;border-radius:50%;border:3px solid var(--cyan);transform:translate(-50%,-50%) scale(.9);opacity:.8;pointer-events:none;animation:ring .5s ease-out forwards}
+@keyframes ring{to{transform:translate(-50%,-50%) scale(1.45);opacity:0}}
+@keyframes spin{to{transform:rotate(360deg)}}
+#coach{position:absolute;left:50%;top:2px;transform:translateX(-50%);z-index:6;max-width:92%;background:#fff;color:#18102e;font-size:13px;font-weight:700;padding:8px 12px;border-radius:12px;box-shadow:0 6px 20px #0008;text-align:center;animation:bob 1.6s ease-in-out infinite;pointer-events:none}
+#coach::after{content:"";position:absolute;left:50%;bottom:-7px;transform:translateX(-50%);border:7px solid transparent;border-top-color:#fff;border-bottom:0}
+@keyframes bob{50%{transform:translate(-50%,-4px)}}
+/* viral */
+#viralBar{position:absolute;left:0;right:0;bottom:0;z-index:5;display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:12px;
+  background:linear-gradient(90deg,#ff2bd6,#ffd23f,#22e5ff,#ff2bd6);background-size:300% 100%;animation:slide 2s linear infinite;color:#120a20;font-weight:900;font-size:14px}
+#viralBar .bar{flex:1;height:8px;border-radius:9px;background:#0004;overflow:hidden}
+#viralBar .bar i{display:block;height:100%;background:#fff;width:100%}
+@keyframes slide{to{background-position:300% 0}}
+body.viral #app::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:40;border-radius:0;box-shadow:inset 0 0 0 3px #ff2bd6aa,inset 0 0 60px #ffd23f66;animation:hue 1.5s linear infinite}
+body.viral #pubWrap::before{opacity:1;filter:blur(14px);animation-duration:1.2s}
+body.viral #pub{background:radial-gradient(circle at 35% 30%,#fff3a8 0%,#ffb21f 35%,#ff2bd6 75%,#7a1fd6 100%)}
+@keyframes hue{to{filter:hue-rotate(360deg)}}
+#bubble{position:absolute;z-index:30;width:78px;height:78px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:900;color:#3a2000;letter-spacing:.5px;
+  background:radial-gradient(circle at 35% 30%,#fffbe0,#ffd23f 45%,#ff9f1c 85%);box-shadow:0 0 0 4px #ffd23f55,0 0 30px #ffd23f,0 0 60px #ff9f1c88;animation:float 2.2s ease-in-out infinite,pop .35s ease-out;touch-action:none}
+#bubble span{display:block;font-size:26px;line-height:1}
+@keyframes float{50%{transform:translateY(-10px) rotate(6deg)}}
+@keyframes pop{from{transform:scale(0)}}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:50;overflow:hidden}
+.fl{position:absolute;font-weight:900;font-size:20px;color:#fff;text-shadow:0 0 8px var(--mag),0 2px 0 #0008;animation:up .9s ease-out forwards;white-space:nowrap;font-variant-numeric:tabular-nums}
+.fl.v{color:var(--gold);font-size:24px;text-shadow:0 0 10px #ff9f1c,0 2px 0 #0008}
+@keyframes up{from{transform:translate(-50%,-50%) scale(.8);opacity:1}to{transform:translate(-50%,-140%) scale(1.15);opacity:0}}
+.pt{position:absolute;width:8px;height:8px;border-radius:2px;animation:burst .9s ease-out forwards}
+@keyframes burst{to{transform:translate(var(--dx),var(--dy)) rotate(540deg);opacity:0}}
+/* tabs + panel */
+#tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:4px;margin-top:6px}
+#tabs button{height:36px;border-radius:10px;font-size:12.5px;font-weight:800;color:var(--mut);position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 2px}
+#tabs button.on{background:linear-gradient(135deg,#ff2bd633,#22e5ff22);color:var(--txt);box-shadow:inset 0 0 0 1px #ff2bd666}
+#tabs button .dot{position:absolute;top:5px;right:6px;width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold);display:none}
+#tabs button.alert .dot{display:block}
+#tabs button.pulse{animation:tp 1s ease-in-out infinite}
+@keyframes tp{50%{box-shadow:inset 0 0 0 2px var(--gold),0 0 14px #ffd23f88}}
+#panel{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px 0 6px;overscroll-behavior:contain}
+.bulk{display:flex;gap:6px;justify-content:flex-end;margin-bottom:6px;align-items:center;font-size:12px;color:var(--mut)}
+.bulk button{padding:4px 10px;border-radius:8px;background:var(--panel);border:1px solid var(--line);font-weight:800;font-size:12px}
+.bulk button.on{border-color:var(--cyan);color:var(--cyan)}
+.sec{font-size:11px;letter-spacing:1.5px;color:var(--mut);text-transform:uppercase;margin:8px 2px 6px;font-weight:800}
+.item{width:100%;display:flex;align-items:center;gap:10px;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:9px 10px;margin-bottom:7px;transition:transform .06s,border-color .2s}
+.item:active{transform:scale(.985)}
+.item.can{border-color:#22e5ff88;box-shadow:0 0 14px #22e5ff1f}
+.item.cant{opacity:.62}
+.item.max{opacity:.75;border-style:dashed}
+.item.lock{opacity:.4}
+.item .ic{width:42px;height:42px;flex:0 0 42px;border-radius:12px;display:grid;place-items:center;font-size:23px;background:var(--panel2)}
+.item .bd{flex:1;min-width:0}
+.item .nm{font-weight:800;font-size:14.5px;display:flex;gap:6px;align-items:baseline}
+.item .nm em{font-style:normal;font-size:12px;color:var(--cyan);font-weight:800}
+.item .ds{font-size:11.5px;color:var(--mut);margin-top:1px;line-height:1.25}
+.item .ex{font-size:11.5px;color:var(--lime);margin-top:2px;font-weight:700}
+.item .cs{flex:0 0 auto;text-align:right;font-weight:900;font-size:13.5px;font-variant-numeric:tabular-nums;color:var(--gold)}
+.item .cs small{display:block;font-size:10.5px;color:var(--mut);font-weight:700}
+.item .own{font-size:20px;font-weight:900;color:#ffffff30;min-width:26px;text-align:right}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:12px;margin-bottom:8px}
+.card h3{margin:0 0 6px;font-size:16px}
+.card p{margin:4px 0;font-size:13px;color:var(--mut);line-height:1.4}
+.big{font-size:24px;font-weight:900;color:var(--gold)}
+.row{display:flex;justify-content:space-between;gap:8px;font-size:13px;padding:3px 0}
+.row b{font-variant-numeric:tabular-nums}
+.prog{height:10px;border-radius:9px;background:#0007;overflow:hidden;margin:6px 0;border:1px solid var(--line)}
+.prog i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--mag));width:0}
+.btn{width:100%;padding:13px;border-radius:14px;font-weight:900;font-size:15px;letter-spacing:.5px;background:linear-gradient(135deg,var(--mag),var(--vio));box-shadow:0 6px 20px #ff2bd644;margin-top:8px}
+.btn.gold{background:linear-gradient(135deg,#ffe066,#ff9f1c);color:#2a1600;box-shadow:0 6px 20px #ffd23f44}
+.btn.ghost{background:var(--panel2);box-shadow:none;border:1px solid var(--line)}
+.btn.danger{background:linear-gradient(135deg,#ff4d6d,#c9184a)}
+.btn:disabled{opacity:.4;filter:grayscale(.6);cursor:not-allowed}
+.btn:not(:disabled):active{transform:scale(.98)}
+.gain{color:var(--lime)}
+ul.kv{margin:6px 0 0;padding-left:18px;font-size:12.5px;color:var(--mut);line-height:1.5}
+.achs{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:7px}
+.ach{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px;font-size:12px}
+.ach b{display:block;font-size:13px;margin-bottom:2px}
+.ach.on{border-color:#b6ff3b88;box-shadow:0 0 12px #b6ff3b22}
+.ach.off{opacity:.45}
+.ach .e{font-size:20px}
+footer{text-align:center;font-size:11px;color:#6f6d99;padding-top:3px}
+/* modal */
+#modal{position:fixed;inset:0;z-index:80;background:#05050cdd;display:grid;place-items:center;padding:calc(16px + var(--sat)) 16px calc(16px + var(--sab));-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+#modal[hidden],#coach[hidden],#viralBar[hidden],#bubble[hidden],#toast[hidden]{display:none}
+.mbox{width:min(420px,100%);max-height:100%;overflow:auto;background:linear-gradient(180deg,#1a1a36,#11112a);border:1px solid #3a3a66;border-radius:20px;padding:18px;box-shadow:0 20px 60px #000a,0 0 40px #8b5cff33;text-align:center;animation:pop .25s ease-out}
+.mbox h2{margin:4px 0 8px;font-size:21px}
+.mbox p{color:var(--mut);font-size:14px;line-height:1.45;margin:6px 0}
+.mbox .em{font-size:44px}
+.mbox .set{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #2a2a4a;font-size:14px;text-align:left}
+.mbox .set:last-of-type{border-bottom:0}
+#toast{position:fixed;left:50%;top:calc(8px + var(--sat));pointer-events:none;transform:translateX(-50%);z-index:90;background:#141430;border:1px solid var(--lime);color:var(--txt);border-radius:14px;padding:9px 14px;font-size:13px;font-weight:700;box-shadow:0 8px 30px #000a,0 0 20px #b6ff3b33;max-width:92vw;text-align:center;animation:drop .3s ease-out}
+@keyframes drop{from{transform:translate(-50%,-30px);opacity:0}}
+#glitch{position:fixed;inset:0;z-index:95;display:grid;place-items:center;background:#000;color:var(--gold);font-weight:900;font-size:22px;letter-spacing:2px;text-align:center;animation:gl .12s steps(2) infinite;padding:20px}
+@keyframes gl{0%{text-shadow:3px 0 var(--mag),-3px 0 var(--cyan);transform:translate(1px,0)}100%{text-shadow:-3px 0 var(--mag),3px 0 var(--cyan);transform:translate(-1px,1px)}}
+/* debug */
+#dbg{position:fixed;left:calc(6px + var(--sal));bottom:calc(60px + var(--sab));z-index:99;font-size:11px}
+#dbg .t{background:#300;border:1px solid #f55;color:#fbb;border-radius:8px;padding:4px 8px;font-weight:800}
+#dbg .p{display:none;flex-wrap:wrap;gap:4px;width:220px;background:#1a0a0aee;border:1px solid #f55;border-radius:10px;padding:6px;margin-bottom:4px}
+#dbg.open .p{display:flex}
+#dbg .p button{background:#3a1010;border:1px solid #844;border-radius:6px;padding:5px 6px;color:#fdd;font-size:11px}
+@media (max-height:620px){#stage{height:clamp(150px,27vh,230px)} #phase{display:none}}
+@media (prefers-reduced-motion:reduce){#pubWrap::before,body.viral #app::after,#bubble,#viralBar{animation:none}}
+</style>
+</head>
+<body>
+<div id="app">
+  <header id="top">
+    <div class="brand"><b>Hype &amp; Click</b><small data-i18n="subtitle">Algorytm Sławy</small></div>
+    <span class="testbadge" data-i18n="testBadge">WERSJA TESTOWA</span>
+    <button class="ibtn" id="langBtn" type="button" aria-label="Język / Language">EN</button>
+    <button class="ibtn" id="muteBtn" type="button" aria-label="Dźwięk">🔊</button>
+    <button class="ibtn" id="setBtn" type="button" aria-label="Ustawienia">⚙️</button>
+  </header>
+  <section id="stats">
+    <div id="hype">0</div>
+    <div id="hypeUnit" data-i18n="hypeUnit">hype</div>
+    <div class="rates"><span class="chip c" id="ppsChip">+0/s</span><span class="chip m" id="tapChip">+1 / tap</span><span class="chip g" id="badgeChip" hidden>🏅 ×1</span></div>
+    <div id="phase"><b id="phaseName"></b><span id="phaseHint"></span></div>
+  </section>
+  <section id="stage">
+    <div id="coach" hidden></div>
+    <div id="pubWrap"><button id="pub" type="button"><span class="ico">📣</span><span class="lbl" data-i18n="publish">PUBLIKUJ</span><span class="sub" id="pubSub">+1</span></button></div>
+    <div id="viralBar" hidden><span>🔥 <span data-i18n="viral">VIRAL ×10</span></span><div class="bar"><i id="viralFill"></i></div><span id="viralT">0:00</span></div>
+  </section>
+  <nav id="tabs" role="tablist">
+    <button type="button" data-tab="ups" class="on"><span data-i18n="tabUps">Ulepszenia</span><i class="dot"></i></button>
+    <button type="button" data-tab="gens"><span data-i18n="tabGens">Generatory</span><i class="dot"></i></button>
+    <button type="button" data-tab="prestige"><span data-i18n="tabPrestige">Kryzys</span><i class="dot"></i></button>
+    <button type="button" data-tab="ach"><span data-i18n="tabAch">Osiągnięcia</span><i class="dot"></i></button>
+  </nav>
+  <main id="panel"></main>
+  <footer>© 2026 Stop60 · <span data-i18n="footNote">wersja testowa · bez reklam</span></footer>
+  <button id="bubble" type="button" hidden><div><span>🔥</span>VIRAL!</div></button>
+</div>
+<div id="fx"></div>
+<div id="toast" hidden></div>
+<div id="modal" hidden><div class="mbox" id="mbox"></div></div>
+<script>
+/*CORE-START*/
+const HC_CORE = (() => {
+  const CFG = {
+    GROWTH: 1.15,
+    OFFLINE_CAP: 8 * 3600,
+    OFFLINE_EFF: 1.0,
+    VIRAL_MULT: 10,
+    VIRAL_BASE: 90,          // s
+    VIRAL_PER_TREND: 15,     // s per 'trend' level
+    BUBBLE_LIFE: 13,         // s on screen
+    BUBBLE_MIN: 240, BUBBLE_MAX: 420, // s between bubbles
+    BUBBLE_FIRST: [60, 90],  // very first bubble of a fresh save
+    PRESTIGE_K: 8e8,         // badges_total = floor(sqrt(lifetime / K))
+    BADGE_BONUS: 0.25,       // +25% everything per badge
+    ACH_BONUS: 0.01,         // +1% per achievement
+    MILESTONES: [10, 25, 50, 100, 150, 200, 250, 300, 400, 500],
+    gens: [
+      { id: 'bots',     cost: 50,     pps: 0.5 },
+      { id: 'creators', cost: 600,    pps: 4 },
+      { id: 'clickbait',cost: 7500,   pps: 30 },
+      { id: 'farms',    cost: 90000,  pps: 220 },
+      { id: 'drama',    cost: 1.1e6,  pps: 1600 },
+      { id: 'memes',    cost: 1.4e7,  pps: 12000 },
+      { id: 'ads',      cost: 2.0e8,  pps: 95000 },
+      { id: 'ai',       cost: 3.3e9,  pps: 800000 },
+    ],
+    // click / meta upgrades (levelled)
+    ups: [
+      { id: 'title',   cost: 30,    g: 1.6,  max: 25, add: 1 },
+      { id: 'thumb',   cost: 1500,  g: 1.7,  max: 25, add: 6 },
+      { id: 'manager', cost: 1000,  g: 2.2,  max: 10, auto: 1 },     // auto-publish 1 tap/s per level
+      { id: 'algo',    cost: 25000, g: 2.2,  max: 20, pct: 0.01 },   // each tap +1% of pps per level
+      { id: 'hashtag', cost: 2e5,   g: 1.8,  max: 25, add: 40 },
+      { id: 'trend',   cost: 1e5,   g: 4.0,  max: 5,  trend: 1 },    // bubbles more often, viral longer
+      { id: 'collab',  cost: 5e6,   g: 30,   max: 4,  mult: 2 },     // x2 tap value
+    ],
+  };
+  const genIndex = Object.fromEntries(CFG.gens.map((g, i) => [g.id, i]));
+  const upIndex = Object.fromEntries(CFG.ups.map((u, i) => [u.id, i]));
+
+  function newState(now) {
+    return {
+      v: 1, hype: 0, runEarned: 0, lifetime: 0, // lifetime = across all runs (drives badges)
+      gens: CFG.gens.map(() => 0), ups: CFG.ups.map(() => 0),
+      badges: 0, badgesEarned: 0, prestiges: 0,
+      taps: 0, virals: 0, bubbles: 0, ach: [],
+      viralLeft: 0, nextBubble: CFG.BUBBLE_FIRST[0] + Math.random() * (CFG.BUBBLE_FIRST[1] - CFG.BUBBLE_FIRST[0]),
+      playTime: 0, runTime: 0, last: now || Date.now(), autoAcc: 0,
+    };
+  }
+  const genCost = (s, i, n = 1) => {
+    const g = CFG.gens[i], k = s.gens[i], r = CFG.GROWTH;
+    return g.cost * Math.pow(r, k) * (Math.pow(r, n) - 1) / (r - 1);
+  };
+  const genMaxAfford = (s, i) => {
+    const g = CFG.gens[i], k = s.gens[i], r = CFG.GROWTH;
+    const n = Math.floor(Math.log(s.hype * (r - 1) / (g.cost * Math.pow(r, k)) + 1) / Math.log(r));
+    return Math.max(0, n);
+  };
+  const upCost = (s, i) => CFG.ups[i].cost * Math.pow(CFG.ups[i].g, s.ups[i]);
+  const upMaxed = (s, i) => s.ups[i] >= CFG.ups[i].max;
+  const milestoneMult = (owned) => { let m = 1; for (const t of CFG.MILESTONES) if (owned >= t) m *= 2; return m; };
+  const nextMilestone = (owned) => CFG.MILESTONES.find(t => owned < t) || null;
+  const globalMult = (s) => (1 + s.badges * CFG.BADGE_BONUS) * (1 + s.ach.length * CFG.ACH_BONUS);
+  const viralMult = (s) => s.viralLeft > 0 ? CFG.VIRAL_MULT : 1;
+  const genPpsBase = (s, i) => s.gens[i] * CFG.gens[i].pps * milestoneMult(s.gens[i]);
+  const ppsNoViral = (s) => { let t = 0; for (let i = 0; i < CFG.gens.length; i++) t += genPpsBase(s, i); return t * globalMult(s); };
+  const pps = (s) => ppsNoViral(s) * viralMult(s);
+  const lvl = (s, id) => s.ups[upIndex[id]];
+  const tapNoViral = (s) => {
+    let add = 1; let pct = 0; let mult = 1;
+    CFG.ups.forEach((u, i) => { const l = s.ups[i]; if (u.add) add += u.add * l; if (u.pct) pct += u.pct * l; if (u.mult) mult *= Math.pow(u.mult, l); });
+    return (add * globalMult(s) + ppsNoViral(s) * pct) * mult;
+  };
+  const tapValue = (s) => tapNoViral(s) * viralMult(s);
+  const autoRate = (s) => lvl(s, 'manager') * CFG.ups[upIndex.manager].auto;
+  const viralDuration = (s) => CFG.VIRAL_BASE + CFG.VIRAL_PER_TREND * lvl(s, 'trend');
+  const bubbleInterval = (s) => { const f = Math.pow(0.85, lvl(s, 'trend')); return (CFG.BUBBLE_MIN + Math.random() * (CFG.BUBBLE_MAX - CFG.BUBBLE_MIN)) * f; };
+  const badgesTotalFor = (lifetime) => Math.floor(Math.sqrt(Math.max(0, lifetime) / CFG.PRESTIGE_K));
+  const prestigeGain = (s) => Math.max(0, badgesTotalFor(s.lifetime) - s.badgesEarned);
+  const lifetimeForNextBadge = (s) => { const n = Math.max(badgesTotalFor(s.lifetime), s.badgesEarned) + 1; return n * n * CFG.PRESTIGE_K; };
+  function earn(s, x) { s.hype += x; s.runEarned += x; s.lifetime += x; }
+  function tap(s) { const v = tapValue(s); earn(s, v); s.taps++; return v; }
+  function buyGen(s, i, n = 1) { if (n <= 0) return false; const c = genCost(s, i, n); if (s.hype < c) return false; s.hype -= c; s.gens[i] += n; return true; }
+  function buyUp(s, i) { if (upMaxed(s, i)) return false; const c = upCost(s, i); if (s.hype < c) return false; s.hype -= c; s.ups[i]++; return true; }
+  function startViral(s) { s.viralLeft = Math.max(s.viralLeft, 0) + viralDuration(s); s.virals++; }
+  // advance passive economy by dt seconds (no bubble spawn logic; that is UI side)
+  function step(s, dt) {
+    let left = dt;
+    while (left > 0) {
+      const d = s.viralLeft > 0 ? Math.min(left, s.viralLeft) : left;
+      earn(s, pps(s) * d);
+      s.autoAcc += autoRate(s) * d;
+      if (s.autoAcc >= 1) { const n = Math.floor(s.autoAcc); s.autoAcc -= n; earn(s, tapValue(s) * n); }
+      if (s.viralLeft > 0) s.viralLeft = Math.max(0, s.viralLeft - d);
+      left -= d;
+    }
+    s.playTime += dt; s.runTime += dt;
+  }
+  function offline(s, seconds) {
+    const sec = Math.min(Math.max(0, seconds), CFG.OFFLINE_CAP);
+    const gain = (ppsNoViral(s) + autoRate(s) * tapNoViral(s)) * sec * CFG.OFFLINE_EFF;
+    earn(s, gain);
+    return { sec, gain, capped: seconds > CFG.OFFLINE_CAP };
+  }
+  function prestige(s) {
+    const g = prestigeGain(s); if (g < 1) return 0;
+    s.badgesEarned += g; s.badges += g; s.prestiges++;
+    s.hype = 0; s.runEarned = 0; s.runTime = 0; s.viralLeft = 0; s.autoAcc = 0;
+    s.gens = CFG.gens.map(() => 0); s.ups = CFG.ups.map(() => 0);
+    return g;
+  }
+  return { CFG, genIndex, upIndex, newState, genCost, genMaxAfford, upCost, upMaxed, milestoneMult, nextMilestone, globalMult, viralMult,
+    genPpsBase, ppsNoViral, pps, tapNoViral, tapValue, autoRate, viralDuration, bubbleInterval, badgesTotalFor, prestigeGain,
+    lifetimeForNextBadge, earn, tap, buyGen, buyUp, startViral, step, offline, prestige, lvl };
+})();
+/*CORE-END*/
+</script>
+<script>
+(() => {
+'use strict';
+const C = HC_CORE, CFG = C.CFG;
+const Q = new URLSearchParams(location.search);
+const DEBUG = Q.get('debug') === '1';
+const KEY = 'hypeclick_save_v1' + (DEBUG ? '_debug' : '');
+const PREF = 'hypeclick_prefs_v1';
+const $ = (id) => document.getElementById(id);
+const LS = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }, del(k) { try { localStorage.removeItem(k); } catch (e) {} } };
+let prefs = { lang: 'pl', mute: false, bulk: 1 };
+try { Object.assign(prefs, JSON.parse(LS.get(PREF) || '{}')); } catch (e) {}
+const ql = Q.get('lang'); if (ql === 'pl' || ql === 'en') prefs.lang = ql;
+const savePrefs = () => LS.set(PREF, JSON.stringify(prefs));
+
+// ---------------- i18n ----------------
+const I18N = {
+  pl: {
+    htmlLang: 'pl', docTitle: 'Hype & Click: Algorytm Sławy — wersja testowa', subtitle: 'Algorytm Sławy', testBadge: 'WERSJA TESTOWA', publish: 'PUBLIKUJ',
+    hypeUnit: 'hype', tabUps: 'Ulepszenia', tabGens: 'Generatory', tabPrestige: 'Kryzys', tabAch: 'Osiągnięcia', footNote: 'wersja testowa · bez reklam',
+    perSec: '/s', perTap: '/ tap', viral: 'VIRAL ×10', langBtn: 'EN', aLang: 'Zmień język na angielski', aMute: 'Wycisz / włącz dźwięk', aSet: 'Ustawienia',
+    phase1: 'Faza I · Ręczne klikanie', phase2: 'Faza II · Automatyzacja', phase3: 'Faza III · Kryzys Algorytmu',
+    phase1Hint: 'Zatrudnij menedżera lub kup 10 generatorów', phase2Hint: (x) => `Do pierwszej Złotej Odznaki: ${x}`, phase3Hint: 'Aktualizacja algorytmu gotowa — zajrzyj do „Kryzys”', phase2HintAfter: (x) => `Kolejna odznaka za ${x}`,
+    secClick: 'Publikowanie', secAuto: 'Automatyzacja i trendy', buyX: 'Kupuj:', max: 'MAKS', maxed: 'MAKS', lvl: 'poz.', locked: 'Zablokowane', lockedDesc: 'Kup poprzedni generator, aby odkryć',
+    each: (x) => `+${x}/s za sztukę`, gives: (x) => `daje teraz +${x}/s`, tierNext: (n) => `×2 przy ${n} szt.`, tierMax: 'maks. poziom', buyN: (n) => `×${n}`,
+    upsHidden: (x) => `Kolejne ulepszenie odblokuje się przy ${x} hype w tej rundzie`,
+    gen: {
+      bots: ['Boty społecznościowe', 'Lajkują wszystko, zawsze i wszędzie.'],
+      creators: ['Kreatorzy treści', 'Trzy rolki i vlog dziennie.'],
+      clickbait: ['Clickbaitowe agencje', '„Nie uwierzysz, co stało się potem!”'],
+      farms: ['Farmy influencerów', 'Setki uśmiechów na zawołanie.'],
+      drama: ['Dramy kontrolowane', 'Kłótnia na żywo? Zaplanowana na 20:00.'],
+      memes: ['Fabryki memów', 'Taśmowa produkcja śmieszków.'],
+      ads: ['Globalne kampanie reklamowe', 'Twoja twarz na każdym billboardzie świata.'],
+      ai: ['Imperium treści AI', 'Treści tworzą się same. Ty tylko zbierasz hype.'],
+    },
+    up: {
+      title: ['Chwytliwy tytuł', '+1 hype za każdy tap'],
+      thumb: ['Krzykliwa miniatura', '+6 hype za każdy tap'],
+      manager: ['Menedżer social media', 'Publikuje za Ciebie: +1 auto-tap na sekundę'],
+      algo: ['Algorytmiczny boost', 'Każdy tap daje dodatkowo +1% Twojego hype/s'],
+      hashtag: ['Hashtagi na czasie', '+40 hype za każdy tap'],
+      trend: ['Wyczucie trendów', 'Złote bańki viral 15% częściej, viral trwa +15 s'],
+      collab: ['Kolaboracje z gwiazdami', '×2 hype za każdy tap (także auto-tapy)'],
+    },
+    upNow: (x) => `teraz: ${x}`, autoNow: (n) => `${n} auto-tapów/s`, viralNow: (s) => `viral: ${s} s`, multNow: (m) => `×${m} za tap`,
+    pTitle: 'Kryzys Algorytmu', pIntro: 'Platformy zmieniają algorytm i Twoje zasięgi lecą w dół. Ale doświadczenie zostaje: za każdą Złotą Odznakę dostajesz na zawsze +25% do całego hype (tapy i generatory).',
+    pBadges: 'Złote Odznaki', pMult: 'Obecny mnożnik', pLifetime: 'Hype zdobyty łącznie (wszystkie rundy)', pGain: 'Zdobędziesz teraz', pNewMult: 'Mnożnik po resecie',
+    pNext: (x) => `Następna odznaka przy ${x} hype łącznie`, pNeedFirst: (x) => `Pierwsza odznaka przy ${x} hype zdobytego łącznie.`,
+    pResets: 'Resetuje się:', pResetsList: ['hype na koncie', 'generatory', 'ulepszenia i menedżer'], pKeeps: 'Zostaje:', pKeepsList: ['Złote Odznaki i ich bonus', 'osiągnięcia i ich bonus', 'statystyki, ustawienia'],
+    pBtn: (n) => `Aktualizacja algorytmu (+${n} 🏅)`, pBtnNo: 'Za mało hype na odznakę', pFormula: 'Odznaki łącznie = ⌊√(hype łącznie ÷ 800 mln)⌋',
+    pConfirmT: 'Wywołać aktualizację algorytmu?', pConfirm: (n, a, b) => `Stracisz hype, generatory i ulepszenia z tej rundy. Zyskasz <b class="gain">+${n} Złotych Odznak</b>, a Twój stały mnożnik wzrośnie z <b>×${a}</b> do <b class="gain">×${b}</b>.`,
+    pYes: 'Tak, resetuj!', cancel: 'Anuluj', pGlitch: 'AKTUALIZACJA ALGORYTMU…', pDone: (n, m) => `Nowa era! +${n} 🏅 · mnożnik ×${m}`,
+    achTitle: 'Osiągnięcia', achBonus: (n, p) => `${n} odblokowanych · bonus +${p}% do hype`, achGot: 'Osiągnięcie!', stats: 'Statystyki',
+    stTaps: 'Tapnięcia', stTime: 'Czas gry', stVirals: 'Virale', stPrest: 'Aktualizacje algorytmu', stLife: 'Hype łącznie', stBest: 'Hype w tej rundzie',
+    wbTitle: 'Witaj z powrotem!', wbText: (t) => `Nie było Cię ${t}. W tym czasie Twój zespół pracował dalej i zarobił:`, wbCap: 'Postęp offline liczy się maks. przez 8 godzin.', ok: 'Super!',
+    setTitle: 'Ustawienia', setSound: 'Dźwięk', setLang: 'Język', on: 'Wł.', off: 'Wył.', setSave: 'Zapisz teraz', saved: 'Zapisano ✔', setReset: 'Usuń zapis i zacznij od nowa',
+    resetT: 'Na pewno?', resetText: 'Cały postęp — także Złote Odznaki i osiągnięcia — zostanie bezpowrotnie usunięty z tego urządzenia.', resetYes: 'Tak, usuń wszystko',
+    setAbout: 'Darmowa gra przeglądarkowa, bez reklam i płatności. Postęp zapisuje się automatycznie tylko w tym urządzeniu (pamięć przeglądarki).', close: 'Zamknij',
+    coach0: 'Tapnij PUBLIKUJ, żeby zdobyć hype! 👆', coach1: 'Masz 50 hype! Kup Boty w zakładce Generatory 🤖', coach2: 'Boty zarabiają same — nawet offline. Łap złote bańki VIRAL! 🔥',
+    viralStart: (s) => `VIRAL! ×10 do wszystkiego przez ${s} s 🔥`, viralEnd: 'Viral wygasł. Czekaj na kolejną złotą bańkę!', phaseUp2: 'Faza II: Automatyzacja! Teraz zespół pracuje za Ciebie.', phaseUp3: 'Faza III: Kryzys Algorytmu dostępny! Sprawdź zakładkę „Kryzys”.',
+    h: 'h', min: 'min', s: 's', and: ' ',
+    ach: {
+      tap1: ['Pierwszy post', 'Opublikuj cokolwiek'], tap500: ['Szybki kciuk', '500 tapnięć'], tap5k: ['Kciuk ze stali', '5000 tapnięć'],
+      gen1: ['Pierwszy bot', 'Kup pierwszy generator'], bots50: ['Armia botów', '50 botów społecznościowych'], mgr: ['Szef zespołu', 'Zatrudnij menedżera'],
+      allg: ['Medialne imperium', 'Miej każdy typ generatora'], h1k: ['Mikroinfluencer', '1 tys. hype łącznie'], h1m: ['Rozpoznawalny', '1 mln hype łącznie'],
+      h1b: ['Celebryta', '1 mld hype łącznie'], h1t: ['Ikona internetu', '1 bln hype łącznie'], pps100: ['Na autopilocie', '100 hype/s'], pps1m: ['Maszyna hype', '1 mln hype/s'],
+      v1: ['Wiralowy debiut', 'Złap pierwszy viral'], v10: ['Król trendów', '10 viralów'], pr1: ['Przetrwałem update', 'Pierwsza aktualizacja algorytmu'], b10: ['Złota kolekcja', '10 Złotych Odznak'],
+    },
+    numSfx: ['', ' tys.', ' mln', ' mld', ' bln', ' bld', ' tryl.', ' tryld.', ' kwadryl.', ' kwadryld.', ' kwintyl.', ' kwintyld.', ' sekstyl.'], dec: ',', grp: '\u00a0',
+  },
+  en: {
+    htmlLang: 'en', docTitle: 'Hype & Click: The Fame Algorithm — test version', subtitle: 'The Fame Algorithm', testBadge: 'TEST VERSION', publish: 'POST IT',
+    hypeUnit: 'hype', tabUps: 'Upgrades', tabGens: 'Generators', tabPrestige: 'Crisis', tabAch: 'Achievements', footNote: 'test version · no ads',
+    perSec: '/s', perTap: '/ tap', viral: 'VIRAL ×10', langBtn: 'PL', aLang: 'Switch language to Polish', aMute: 'Mute / unmute sound', aSet: 'Settings',
+    phase1: 'Phase I · Manual clicking', phase2: 'Phase II · Automation', phase3: 'Phase III · Algorithm Crisis',
+    phase1Hint: 'Hire a manager or buy 10 generators', phase2Hint: (x) => `To your first Golden Badge: ${x}`, phase3Hint: 'Algorithm update ready — open the “Crisis” tab', phase2HintAfter: (x) => `Next badge in ${x}`,
+    secClick: 'Posting', secAuto: 'Automation & trends', buyX: 'Buy:', max: 'MAX', maxed: 'MAX', lvl: 'lvl', locked: 'Locked', lockedDesc: 'Buy the previous generator to reveal',
+    each: (x) => `+${x}/s each`, gives: (x) => `now gives +${x}/s`, tierNext: (n) => `×2 at ${n} owned`, tierMax: 'max tier', buyN: (n) => `×${n}`,
+    upsHidden: (x) => `Next upgrade unlocks at ${x} hype earned this run`,
+    gen: {
+      bots: ['Social bots', 'They like everything, always, everywhere.'],
+      creators: ['Content creators', 'Three reels and a vlog a day.'],
+      clickbait: ['Clickbait agencies', '“You won’t believe what happened next!”'],
+      farms: ['Influencer farms', 'Hundreds of smiles on demand.'],
+      drama: ['Controlled dramas', 'A live feud? Scheduled for 8 PM.'],
+      memes: ['Meme factories', 'Assembly-line laughs.'],
+      ads: ['Global ad campaigns', 'Your face on every billboard on Earth.'],
+      ai: ['AI content empire', 'Content makes itself. You just collect hype.'],
+    },
+    up: {
+      title: ['Catchy title', '+1 hype per tap'],
+      thumb: ['Flashy thumbnail', '+6 hype per tap'],
+      manager: ['Social media manager', 'Posts for you: +1 auto-tap per second'],
+      algo: ['Algorithmic boost', 'Each tap also gives +1% of your hype/s'],
+      hashtag: ['Trending hashtags', '+40 hype per tap'],
+      trend: ['Trend sense', 'Golden viral bubbles 15% more often, viral lasts +15 s'],
+      collab: ['Celebrity collabs', '×2 hype per tap (auto-taps too)'],
+    },
+    upNow: (x) => `now: ${x}`, autoNow: (n) => `${n} auto-taps/s`, viralNow: (s) => `viral: ${s} s`, multNow: (m) => `×${m} per tap`,
+    pTitle: 'Algorithm Crisis', pIntro: 'The platforms change their algorithm and your reach crashes. But experience stays: every Golden Badge permanently gives +25% to all hype (taps and generators).',
+    pBadges: 'Golden Badges', pMult: 'Current multiplier', pLifetime: 'Total hype earned (all runs)', pGain: 'You would gain now', pNewMult: 'Multiplier after reset',
+    pNext: (x) => `Next badge at ${x} total hype`, pNeedFirst: (x) => `First badge at ${x} total hype earned.`,
+    pResets: 'Resets:', pResetsList: ['your hype balance', 'generators', 'upgrades and manager'], pKeeps: 'Kept:', pKeepsList: ['Golden Badges and their bonus', 'achievements and their bonus', 'statistics, settings'],
+    pBtn: (n) => `Algorithm update (+${n} 🏅)`, pBtnNo: 'Not enough hype for a badge', pFormula: 'Total badges = ⌊√(total hype ÷ 800 M)⌋',
+    pConfirmT: 'Trigger the algorithm update?', pConfirm: (n, a, b) => `You lose this run’s hype, generators and upgrades. You gain <b class="gain">+${n} Golden Badges</b> and your permanent multiplier rises from <b>×${a}</b> to <b class="gain">×${b}</b>.`,
+    pYes: 'Yes, reset!', cancel: 'Cancel', pGlitch: 'ALGORITHM UPDATE…', pDone: (n, m) => `A new era! +${n} 🏅 · multiplier ×${m}`,
+    achTitle: 'Achievements', achBonus: (n, p) => `${n} unlocked · +${p}% hype bonus`, achGot: 'Achievement!', stats: 'Statistics',
+    stTaps: 'Taps', stTime: 'Play time', stVirals: 'Virals', stPrest: 'Algorithm updates', stLife: 'Total hype', stBest: 'Hype this run',
+    wbTitle: 'Welcome back!', wbText: (t) => `You were away for ${t}. Meanwhile your team kept working and earned:`, wbCap: 'Offline progress counts for up to 8 hours.', ok: 'Great!',
+    setTitle: 'Settings', setSound: 'Sound', setLang: 'Language', on: 'On', off: 'Off', setSave: 'Save now', saved: 'Saved ✔', setReset: 'Delete save and start over',
+    resetT: 'Are you sure?', resetText: 'All progress — including Golden Badges and achievements — will be permanently deleted from this device.', resetYes: 'Yes, delete everything',
+    setAbout: 'A free browser game with no ads and no payments. Progress is saved automatically on this device only (browser storage).', close: 'Close',
+    coach0: 'Tap POST IT to earn hype! 👆', coach1: 'You have 50 hype! Buy Bots in the Generators tab 🤖', coach2: 'Bots earn on their own — even offline. Catch golden VIRAL bubbles! 🔥',
+    viralStart: (s) => `VIRAL! ×10 to everything for ${s} s 🔥`, viralEnd: 'The viral is over. Wait for the next golden bubble!', phaseUp2: 'Phase II: Automation! Your team now works for you.', phaseUp3: 'Phase III: Algorithm Crisis available! Check the “Crisis” tab.',
+    h: 'h', min: 'min', s: 's', and: ' ',
+    ach: {
+      tap1: ['First post', 'Post anything'], tap500: ['Quick thumb', '500 taps'], tap5k: ['Thumb of steel', '5,000 taps'],
+      gen1: ['First bot', 'Buy your first generator'], bots50: ['Bot army', '50 social bots'], mgr: ['Team boss', 'Hire a manager'],
+      allg: ['Media empire', 'Own every generator type'], h1k: ['Micro-influencer', '1K total hype'], h1m: ['Recognisable', '1 M total hype'],
+      h1b: ['Celebrity', '1 B total hype'], h1t: ['Internet icon', '1 T total hype'], pps100: ['On autopilot', '100 hype/s'], pps1m: ['Hype machine', '1 M hype/s'],
+      v1: ['Viral debut', 'Catch your first viral'], v10: ['Trend king', '10 virals'], pr1: ['Survived the update', 'First algorithm update'], b10: ['Golden collection', '10 Golden Badges'],
+    },
+    numSfx: ['', 'K', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx', 'Sp', 'Oc', 'No', 'Dc', 'Ud'], dec: '.', grp: ',',
+  },
+};
+let L = I18N[prefs.lang] || I18N.pl;
+const GEN_IC = { bots: '🤖', creators: '🎥', clickbait: '🎣', farms: '🤳', drama: '🍿', memes: '😂', ads: '📢', ai: '🧠' };
+const UP_IC = { title: '✍️', thumb: '🖼️', manager: '🧑‍💼', algo: '⚙️', hashtag: '#️⃣', trend: '📈', collab: '🤝' };
+const ACH = [
+  ['tap1', '👆', s => s.taps >= 1], ['tap500', '⚡', s => s.taps >= 500], ['tap5k', '🦾', s => s.taps >= 5000],
+  ['gen1', '🤖', s => s.gens.some(x => x > 0)], ['bots50', '🛸', s => s.gens[0] >= 50], ['mgr', '🧑‍💼', s => C.lvl(s, 'manager') > 0],
+  ['allg', '🏰', s => s.gens.every(x => x > 0)], ['h1k', '🌱', s => s.lifetime >= 1e3], ['h1m', '⭐', s => s.lifetime >= 1e6],
+  ['h1b', '🌟', s => s.lifetime >= 1e9], ['h1t', '👑', s => s.lifetime >= 1e12], ['pps100', '🛫', s => C.ppsNoViral(s) >= 100], ['pps1m', '🚀', s => C.ppsNoViral(s) >= 1e6],
+  ['v1', '🔥', s => s.virals >= 1], ['v10', '🌋', s => s.virals >= 10], ['pr1', '🔄', s => s.prestiges >= 1], ['b10', '🏅', s => s.badgesEarned >= 10],
+];
+
+// ---------------- number formatting ----------------
+function fixed(x, d) { let t = x.toFixed(d); if (d > 0) t = t.replace(/\.?0+$/, ''); return t.replace('.', L.dec); }
+function group(n) { return String(Math.floor(n)).replace(/\B(?=(\d{3})+(?!\d))/g, L.grp); }
+function fmt(n) {
+  if (!isFinite(n)) return '∞';
+  if (n < 0) return '-' + fmt(-n);
+  if (n < 100 && n % 1 !== 0) return fixed(Math.floor(n * 10) / 10, 1);
+  if (n < 10000) return group(n);
+  let tier = Math.floor(Math.log10(n) / 3);
+  let m = n / Math.pow(10, tier * 3);
+  let d = m < 10 ? 2 : m < 100 ? 1 : 0;
+  let r = Math.floor(m * Math.pow(10, d)) / Math.pow(10, d);
+  if (r >= 1000) { tier++; r = 1; d = 2; }
+  if (tier >= L.numSfx.length) { const e = Math.floor(Math.log10(n)); return fixed(n / Math.pow(10, e), 2) + 'e' + e; }
+  return fixed(r, d) + L.numSfx[tier];
+}
+const fmtMult = (m) => fixed(Math.round(m * 100) / 100, 2);
+function fmtDur(sec) {
+  sec = Math.floor(sec); const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+  if (h) return `${h} ${L.h}${m ? ' ' + m + ' ' + L.min : ''}`;
+  if (m) return `${m} ${L.min}${s ? ' ' + s + ' ' + L.s : ''}`;
+  return `${s} ${L.s}`;
+}
+const mmss = (sec) => { sec = Math.ceil(sec); return Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0'); };
+
+// ---------------- state & save ----------------
+let s = C.newState(Date.now());
+let suppressSave = false;
+function sanitize(o) {
+  const d = C.newState(Date.now());
+  if (!o || typeof o !== 'object') return d;
+  for (const k of Object.keys(d)) if (o[k] !== undefined && typeof o[k] === typeof d[k]) d[k] = o[k];
+  const fixArr = (a, n) => { const r = new Array(n).fill(0); if (Array.isArray(a)) for (let i = 0; i < n; i++) r[i] = Math.max(0, Math.floor(+a[i] || 0)); return r; };
+  d.gens = fixArr(o.gens, CFG.gens.length); d.ups = fixArr(o.ups, CFG.ups.length);
+  CFG.ups.forEach((u, i) => { d.ups[i] = Math.min(d.ups[i], u.max); });
+  d.ach = Array.isArray(o.ach) ? o.ach.filter(a => ACH.some(x => x[0] === a)) : [];
+  for (const k of ['hype', 'runEarned', 'lifetime', 'viralLeft', 'nextBubble', 'playTime', 'runTime']) if (!isFinite(d[k]) || d[k] < 0) d[k] = 0;
+  d.onb = typeof o.onb === 'number' ? o.onb : 0;
+  return d;
+}
+function save() {
+  if (suppressSave) return false;
+  s.last = Date.now();
+  return LS.set(KEY, JSON.stringify(s));
+}
+function load() {
+  const raw = LS.get(KEY); if (!raw) { s.onb = 0; return null; }
+  try { s = sanitize(JSON.parse(raw)); return s.last; } catch (e) { s = C.newState(Date.now()); s.onb = 0; return null; }
+}
+
+// ---------------- audio (procedural Web Audio) ----------------
+let actx = null, master = null, lastTapSnd = 0;
+function audio() {
+  if (prefs.mute) return null;
+  if (!actx) { try { const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null; actx = new AC(); master = actx.createGain(); master.gain.value = 0.22; master.connect(actx.destination); } catch (e) { return null; } }
+  if (actx.state === 'suspended') actx.resume().catch(() => {});
+  return actx;
+}
+function tone(freq, dur, type = 'sine', vol = 1, when = 0, slideTo = 0) {
+  const a = audio(); if (!a) return;
+  const t = a.currentTime + when, o = a.createOscillator(), g = a.createGain();
+  o.type = type; o.frequency.setValueAtTime(freq, t); if (slideTo) o.frequency.exponentialRampToValueAtTime(slideTo, t + dur);
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.008); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  o.connect(g); g.connect(master); o.start(t); o.stop(t + dur + 0.02);
+}
+function noise(dur, vol = 0.4, when = 0, hp = 800) {
+  const a = audio(); if (!a) return;
+  const len = Math.floor(a.sampleRate * dur), buf = a.createBuffer(1, len, a.sampleRate), ch = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) ch[i] = (Math.random() * 2 - 1) * (1 - i / len);
+  const src = a.createBufferSource(), f = a.createBiquadFilter(), g = a.createGain(); f.type = 'highpass'; f.frequency.value = hp; g.gain.value = vol;
+  src.buffer = buf; src.connect(f); f.connect(g); g.connect(master); src.start(a.currentTime + when);
+}
+const SND = {
+  tap() { const n = performance.now(); if (n - lastTapSnd < 45) return; lastTapSnd = n; const v = s.viralLeft > 0; tone((v ? 880 : 560) + Math.random() * 120, 0.07, 'triangle', 0.5, 0, (v ? 1300 : 760)); },
+  buy() { tone(660, 0.08, 'square', 0.18); tone(990, 0.12, 'square', 0.16, 0.06); },
+  no() { tone(180, 0.12, 'sawtooth', 0.15, 0, 120); },
+  viral() { tone(300, 0.5, 'sawtooth', 0.2, 0, 1200); [523, 659, 784, 1046].forEach((f, i) => tone(f, 0.35, 'triangle', 0.35, 0.12 + i * 0.08)); noise(0.4, 0.15, 0.05, 3000); },
+  bubble() { tone(1200, 0.2, 'sine', 0.3, 0, 1800); },
+  ach() { [784, 988, 1318].forEach((f, i) => tone(f, 0.22, 'sine', 0.35, i * 0.09)); },
+  prestige() { noise(1.2, 0.3, 0, 300); tone(880, 1.2, 'sawtooth', 0.15, 0, 110); [392, 523, 659, 784].forEach((f, i) => tone(f, 0.6, 'triangle', 0.3, 1.3 + i * 0.1)); },
+};
+
+// ---------------- FX ----------------
+const fx = $('fx');
+function floatText(x, y, text, viral) {
+  if (fx.childElementCount > 40) fx.firstChild.remove();
+  const e = document.createElement('div'); e.className = 'fl' + (viral ? ' v' : ''); e.textContent = text;
+  e.style.left = (x + (Math.random() * 30 - 15)) + 'px'; e.style.top = (y - 10) + 'px'; fx.appendChild(e);
+  setTimeout(() => e.remove(), 950);
+}
+function burst(x, y, n = 24, colors = ['#ff2bd6', '#22e5ff', '#ffd23f', '#b6ff3b', '#fff']) {
+  for (let i = 0; i < n; i++) {
+    const p = document.createElement('div'); p.className = 'pt'; const a = Math.random() * Math.PI * 2, r = 60 + Math.random() * 120;
+    p.style.left = x + 'px'; p.style.top = y + 'px'; p.style.background = colors[i % colors.length];
+    p.style.setProperty('--dx', Math.cos(a) * r + 'px'); p.style.setProperty('--dy', Math.sin(a) * r + 'px'); fx.appendChild(p); setTimeout(() => p.remove(), 950);
+  }
+}
+let toastT = 0;
+function toast(msg, ms = 2600) { const t = $('toast'); t.innerHTML = msg; t.hidden = false; t.style.animation = 'none'; void t.offsetWidth; t.style.animation = ''; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, ms); }
+
+// ---------------- tapping ----------------
+const pub = $('pub');
+function doTap(x, y) {
+  const v = C.tap(s);
+  floatText(x, y, '+' + fmt(v), s.viralLeft > 0);
+  SND.tap();
+  pub.classList.add('press'); clearTimeout(pub._t); pub._t = setTimeout(() => pub.classList.remove('press'), 90);
+  if (Math.random() < 0.35 || s.taps < 20) { const r = document.createElement('div'); r.className = 'ring'; $('pubWrap').appendChild(r); setTimeout(() => r.remove(), 520); }
+  if (navigator.vibrate && s.taps % 25 === 0) { try { navigator.vibrate(8); } catch (e) {} }
+  dirty = true;
+}
+pub.addEventListener('pointerdown', (e) => { e.preventDefault(); doTap(e.clientX, e.clientY); });
+pub.addEventListener('contextmenu', (e) => e.preventDefault());
+document.addEventListener('keydown', (e) => {
+  if (e.repeat || !$('modal').hidden) return;
+  if (e.code === 'Space' || e.code === 'Enter') { if (document.activeElement && document.activeElement !== pub && document.activeElement.tagName === 'BUTTON') return; e.preventDefault(); const r = pub.getBoundingClientRect(); doTap(r.left + r.width / 2, r.top + r.height / 3); }
+});
+
+// ---------------- viral & bubble ----------------
+const bubble = $('bubble'); let bubbleLeft = 0;
+function spawnBubble() {
+  if (!bubble.hidden) return;
+  const app = $('app').getBoundingClientRect();
+  const w = app.width, h = app.height;
+  const x = 12 + Math.random() * Math.max(10, w - 78 - 24), y = h * (0.22 + Math.random() * 0.5);
+  bubble.style.left = x + 'px'; bubble.style.top = y + 'px'; bubble.hidden = false; bubbleLeft = CFG.BUBBLE_LIFE;
+  SND.bubble();
+}
+function hideBubble() { bubble.hidden = true; bubbleLeft = 0; }
+bubble.addEventListener('pointerdown', (e) => {
+  e.preventDefault(); e.stopPropagation();
+  const r = bubble.getBoundingClientRect(); hideBubble(); s.bubbles++;
+  startViral(r.left + r.width / 2, r.top + r.height / 2);
+});
+function startViral(x, y) {
+  C.startViral(s); SND.viral();
+  const r = pub.getBoundingClientRect(); burst(x != null ? x : r.left + r.width / 2, y != null ? y : r.top + r.height / 2, 40);
+  toast(L.viralStart(Math.round(s.viralLeft))); dirty = true; save();
+}
+let wasViral = false;
+
+// ---------------- prestige ----------------
+function doPrestige(skipAnim) {
+  const g = C.prestigeGain(s); if (g < 1) return 0;
+  const finish = () => {
+    C.prestige(s); hideBubble(); s.nextBubble = C.bubbleInterval(s) * 0.5; lastPhase = 1;
+    save(); renderPanel(true); updateUI(true);
+    toast(L.pDone(g, fmtMult(C.globalMult(s))), 3500); SND.ach();
+  };
+  if (skipAnim) { finish(); return g; }
+  SND.prestige();
+  const gl = document.createElement('div'); gl.id = 'glitch'; gl.textContent = L.pGlitch; document.body.appendChild(gl);
+  setTimeout(() => { gl.remove(); finish(); }, 1700);
+  return g;
+}
+
+// ---------------- modal ----------------
+function modal(html, onBind) { $('mbox').innerHTML = html; $('modal').hidden = false; if (onBind) onBind($('mbox')); }
+function closeModal() { $('modal').hidden = true; $('mbox').innerHTML = ''; }
+$('modal').addEventListener('click', (e) => { if (e.target.id === 'modal' && !$('modal').dataset.lock) closeModal(); });
+function welcomeBack(r) {
+  modal(`<div class="em">📲</div><h2>${L.wbTitle}</h2><p>${L.wbText(fmtDur(r.sec))}</p><div class="big" id="wbGain">+${fmt(r.gain)} hype</div>${r.capped ? `<p style="font-size:12px">${L.wbCap}</p>` : `<p style="font-size:12px">${L.wbCap}</p>`}<button class="btn gold" id="wbOk">${L.ok}</button>`,
+    (m) => m.querySelector('#wbOk').onclick = () => { closeModal(); const rr = pub.getBoundingClientRect(); burst(rr.left + rr.width / 2, rr.top + rr.height / 2, 30); SND.buy(); });
+}
+function openSettings() {
+  modal(`<div class="em">⚙️</div><h2>${L.setTitle}</h2>
+    <div class="set"><span>${L.setSound}</span><button class="ibtn" id="sSnd">${prefs.mute ? '🔇 ' + L.off : '🔊 ' + L.on}</button></div>
+    <div class="set"><span>${L.setLang}</span><span><button class="ibtn" id="sPl" style="${prefs.lang === 'pl' ? 'border-color:var(--cyan)' : ''}">PL</button> <button class="ibtn" id="sEn" style="${prefs.lang === 'en' ? 'border-color:var(--cyan)' : ''}">EN</button></span></div>
+    <button class="btn ghost" id="sSave">${L.setSave}</button>
+    <button class="btn danger" id="sReset">${L.setReset}</button>
+    <p style="font-size:12px;margin-top:12px">${L.setAbout}</p><p style="font-size:12px">© 2026 Stop60</p>
+    <button class="btn ghost" id="sClose">${L.close}</button>`, (m) => {
+    m.querySelector('#sSnd').onclick = () => { toggleMute(); openSettings(); };
+    m.querySelector('#sPl').onclick = () => { setLang('pl'); openSettings(); };
+    m.querySelector('#sEn').onclick = () => { setLang('en'); openSettings(); };
+    m.querySelector('#sSave').onclick = (e) => { save(); e.target.textContent = L.saved; };
+    m.querySelector('#sClose').onclick = closeModal;
+    m.querySelector('#sReset').onclick = () => modal(`<div class="em">⚠️</div><h2>${L.resetT}</h2><p>${L.resetText}</p><button class="btn danger" id="rYes">${L.resetYes}</button><button class="btn ghost" id="rNo">${L.cancel}</button>`, (m2) => {
+      m2.querySelector('#rNo').onclick = openSettings;
+      m2.querySelector('#rYes').onclick = () => { suppressSave = true; LS.del(KEY); location.reload(); };
+    });
+  });
+}
+$('setBtn').onclick = openSettings;
+function toggleMute() { prefs.mute = !prefs.mute; savePrefs(); if (prefs.mute && actx) actx.suspend().catch(() => {}); updateTop(); if (!prefs.mute) SND.buy(); }
+$('muteBtn').onclick = toggleMute;
+$('langBtn').onclick = () => setLang(prefs.lang === 'pl' ? 'en' : 'pl');
+function setLang(l) { prefs.lang = l; L = I18N[l]; savePrefs(); applyLang(); }
+function applyLang() {
+  document.documentElement.lang = L.htmlLang; document.title = L.docTitle;
+  document.querySelectorAll('[data-i18n]').forEach(e => { const v = L[e.dataset.i18n]; if (typeof v === 'string') e.textContent = v; });
+  updateTop(); renderPanel(true); updateUI(true);
+}
+function updateTop() {
+  $('langBtn').textContent = L.langBtn; $('langBtn').setAttribute('aria-label', L.aLang);
+  $('muteBtn').textContent = prefs.mute ? '🔇' : '🔊'; $('muteBtn').setAttribute('aria-label', L.aMute); $('setBtn').setAttribute('aria-label', L.aSet);
+}
+
+// ---------------- tabs & panel ----------------
+let tab = 'ups', panelSig = '', dirty = true;
+document.querySelectorAll('#tabs button').forEach(b => b.addEventListener('click', () => { tab = b.dataset.tab; document.querySelectorAll('#tabs button').forEach(x => x.classList.toggle('on', x === b)); renderPanel(true); $('panel').scrollTop = 0; }));
+const panel = $('panel');
+function genVisible(i) { return i === 0 || s.gens[i - 1] > 0 || s.gens[i] > 0; }
+function upVisible(i) { return s.ups[i] > 0 || s.runEarned >= CFG.ups[i].cost * 0.35 || i === 0; }
+function bulkN(i) { if (prefs.bulk === 'max') return Math.max(1, C.genMaxAfford(s, i)); return prefs.bulk; }
+function sig() {
+  if (tab === 'gens') return 'g' + CFG.gens.map((g, i) => genVisible(i) ? 1 : 0).join('') + prefs.bulk + prefs.lang;
+  if (tab === 'ups') return 'u' + CFG.ups.map((u, i) => upVisible(i) ? 1 : 0).join('') + prefs.lang;
+  if (tab === 'ach') return 'a' + s.ach.length + prefs.lang + Math.floor(s.playTime / 5);
+  return 'p' + prefs.lang + C.prestigeGain(s) + '_' + s.badges;
+}
+function renderPanel(force) {
+  const sg = sig(); if (!force && sg === panelSig) return; panelSig = sg;
+  const st = panel.scrollTop;
+  if (tab === 'gens') renderGens(); else if (tab === 'ups') renderUps(); else if (tab === 'ach') renderAch(); else renderPrestige();
+  panel.scrollTop = st;
+  refreshItems();
+}
+function renderGens() {
+  let h = `<div class="bulk"><span>${L.buyX}</span>` + [1, 10, 100, 'max'].map(b => `<button type="button" data-bulk="${b}" class="${prefs.bulk === b ? 'on' : ''}">${b === 'max' ? L.max : '×' + b}</button>`).join('') + `</div>`;
+  let shownLocked = false;
+  CFG.gens.forEach((g, i) => {
+    if (genVisible(i)) {
+      h += `<button type="button" class="item" data-gen="${i}"><div class="ic">${GEN_IC[g.id]}</div><div class="bd"><div class="nm">${L.gen[g.id][0]} <em data-f="n"></em></div><div class="ds">${L.gen[g.id][1]}</div><div class="ex" data-f="ex"></div></div><div class="cs"><span data-f="c"></span><small data-f="cn"></small></div></button>`;
+    } else if (!shownLocked) {
+      shownLocked = true;
+      h += `<div class="item lock"><div class="ic">❔</div><div class="bd"><div class="nm">${L.locked}</div><div class="ds">${L.lockedDesc}</div></div><div class="cs">${fmt(g.cost)}</div></div>`;
+    }
+  });
+  panel.innerHTML = h;
+  panel.querySelectorAll('[data-bulk]').forEach(b => b.onclick = () => { const v = b.dataset.bulk; prefs.bulk = v === 'max' ? 'max' : +v; savePrefs(); renderPanel(true); });
+  panel.querySelectorAll('[data-gen]').forEach(b => b.onclick = (e) => {
+    const i = +b.dataset.gen; const n = prefs.bulk === 'max' ? C.genMaxAfford(s, i) : prefs.bulk;
+    if (n > 0 && C.buyGen(s, i, n)) { SND.buy(); const r = b.getBoundingClientRect(); floatText(r.right - 50, r.top + 10, '+' + n, false); dirty = true; afterBuy(); } else SND.no();
+  });
+}
+function renderUps() {
+  let h = `<div class="sec">${L.secClick}</div>`; let hiddenNext = null;
+  const order = ['title', 'thumb', 'hashtag', 'algo', 'collab', '|', 'manager', 'trend'];
+  for (const id of order) {
+    if (id === '|') { h += `<div class="sec">${L.secAuto}</div>`; continue; }
+    const i = C.upIndex[id], u = CFG.ups[i];
+    if (!upVisible(i)) { if (!hiddenNext || u.cost < hiddenNext) hiddenNext = u.cost; continue; }
+    h += `<button type="button" class="item" data-up="${i}"><div class="ic">${UP_IC[id]}</div><div class="bd"><div class="nm">${L.up[id][0]} <em data-f="n"></em></div><div class="ds">${L.up[id][1]}</div><div class="ex" data-f="ex"></div></div><div class="cs"><span data-f="c"></span></div></button>`;
+  }
+  if (hiddenNext) h += `<p style="font-size:12px;color:var(--mut);text-align:center">🔒 ${L.upsHidden(fmt(hiddenNext * 0.35))}</p>`;
+  panel.innerHTML = h;
+  panel.querySelectorAll('[data-up]').forEach(b => b.onclick = () => {
+    const i = +b.dataset.up; if (C.buyUp(s, i)) { SND.buy(); dirty = true; afterBuy(); } else SND.no();
+  });
+}
+function afterBuy() { refreshItems(); updateUI(true); clearTimeout(afterBuy._t); afterBuy._t = setTimeout(save, 800); }
+function refreshItems() {
+  if (tab === 'gens') panel.querySelectorAll('[data-gen]').forEach(b => {
+    const i = +b.dataset.gen, g = CFG.gens[i], own = s.gens[i];
+    const n = prefs.bulk === 'max' ? Math.max(1, C.genMaxAfford(s, i)) : prefs.bulk, c = C.genCost(s, i, n);
+    const mm = C.milestoneMult(own), nx = C.nextMilestone(own), each = g.pps * mm * C.globalMult(s);
+    b.querySelector('[data-f=n]').textContent = own ? '×' + own : '';
+    b.querySelector('[data-f=ex]').textContent = L.each(fmt(each)) + (own ? ' · ' + L.gives(fmt(C.genPpsBase(s, i) * C.globalMult(s))) : '') + ' · ' + (nx ? L.tierNext(nx) : L.tierMax);
+    b.querySelector('[data-f=c]').textContent = fmt(Math.ceil(c));
+    b.querySelector('[data-f=cn]').textContent = n > 1 ? L.buyN(n) : '';
+    const can = s.hype >= c; b.classList.toggle('can', can); b.classList.toggle('cant', !can);
+  });
+  if (tab === 'ups') panel.querySelectorAll('[data-up]').forEach(b => {
+    const i = +b.dataset.up, u = CFG.ups[i], l = s.ups[i], mx = C.upMaxed(s, i), c = C.upCost(s, i);
+    b.querySelector('[data-f=n]').textContent = l ? `${L.lvl} ${l}${mx ? '' : '/' + u.max}` : '';
+    let ex = '';
+    if (u.add) ex = L.upNow(`+${fmt(u.add * l)} / tap`); else if (u.auto) ex = L.upNow(L.autoNow(C.autoRate(s)));
+    else if (u.pct) ex = L.upNow(`+${fixed(u.pct * l * 100, 0)}% hype/s / tap`); else if (u.trend) ex = L.upNow(L.viralNow(C.viralDuration(s)));
+    else if (u.mult) ex = L.upNow(L.multNow(Math.pow(u.mult, l)));
+    b.querySelector('[data-f=ex]').textContent = ex;
+    b.querySelector('[data-f=c]').textContent = mx ? L.maxed : fmt(Math.ceil(c));
+    const can = !mx && s.hype >= c; b.classList.toggle('can', can); b.classList.toggle('cant', !can && !mx); b.classList.toggle('max', mx);
+  });
+  if (tab === 'prestige') { const pg = panel.querySelector('#pLive'); if (pg) updatePrestigeLive(); }
+}
+function renderPrestige() {
+  const g = C.prestigeGain(s), cur = C.globalMult(s), after = (1 + (s.badges + g) * CFG.BADGE_BONUS) * (1 + s.ach.length * CFG.ACH_BONUS);
+  panel.innerHTML = `<div class="card" id="pLive">
+    <h3>🔄 ${L.pTitle}</h3>
+    <div class="row" style="font-size:15px"><span>${L.pGain}</span><b class="gain" data-p="gain">+${g} 🏅</b></div>
+    <div class="row"><span>${L.pMult}</span><b>×${fmtMult(cur)} → <span class="gain" data-p="after">×${fmtMult(after)}</span></b></div>
+    <button type="button" class="btn gold" id="pBtn" ${g >= 1 ? '' : 'disabled'}>${g >= 1 ? L.pBtn(g) : L.pBtnNo}</button>
+    <div class="prog" style="margin-top:10px"><i data-p="bar"></i></div>
+    <p data-p="next" style="font-size:12px"></p>
+    <div class="row"><span>🏅 ${L.pBadges}</span><b>${s.badges}</b></div>
+    <div class="row"><span>${L.pLifetime}</span><b data-p="life">${fmt(s.lifetime)}</b></div>
+  </div>
+  <div class="card"><p>${L.pIntro}</p><div class="row" style="align-items:flex-start"><div><b>${L.pResets}</b><ul class="kv">${L.pResetsList.map(x => `<li>${x}</li>`).join('')}</ul></div><div><b>${L.pKeeps}</b><ul class="kv">${L.pKeepsList.map(x => `<li>${x}</li>`).join('')}</ul></div></div>
+  <p style="font-size:11px;margin-top:8px">${L.pFormula}</p></div>`;
+  updatePrestigeLive();
+  panel.querySelector('#pBtn').onclick = () => {
+    const gg = C.prestigeGain(s); if (gg < 1) return;
+    const a = fmtMult(C.globalMult(s)), b = fmtMult((1 + (s.badges + gg) * CFG.BADGE_BONUS) * (1 + s.ach.length * CFG.ACH_BONUS));
+    modal(`<div class="em">🔄</div><h2>${L.pConfirmT}</h2><p>${L.pConfirm(gg, a, b)}</p><button class="btn gold" id="pYes">${L.pYes}</button><button class="btn ghost" id="pNo">${L.cancel}</button>`, (m) => {
+      m.querySelector('#pNo').onclick = closeModal; m.querySelector('#pYes').onclick = () => { closeModal(); doPrestige(); };
+    });
+  };
+}
+function updatePrestigeLive() {
+  const tot = C.badgesTotalFor(s.lifetime), base = Math.max(tot, s.badgesEarned), lo = base * base * CFG.PRESTIGE_K, hi = (base + 1) * (base + 1) * CFG.PRESTIGE_K;
+  const q = (sel) => panel.querySelector(`[data-p=${sel}]`);
+  if (!q('life')) return;
+  q('life').textContent = fmt(s.lifetime);
+  q('bar').style.width = Math.min(100, Math.max(0, (s.lifetime - lo) / (hi - lo) * 100)) + '%';
+  q('next').textContent = s.badgesEarned === 0 && tot === 0 ? L.pNeedFirst(fmt(CFG.PRESTIGE_K)) : L.pNext(fmt(hi));
+}
+function renderAch() {
+  const p = Math.round(s.ach.length * CFG.ACH_BONUS * 100);
+  let h = `<div class="sec">${L.achTitle} · ${L.achBonus(s.ach.length, p)}</div><div class="achs">`;
+  for (const [id, e] of ACH) { const on = s.ach.includes(id); h += `<div class="ach ${on ? 'on' : 'off'}"><span class="e">${on ? e : '🔒'}</span><b>${L.ach[id][0]}</b>${L.ach[id][1]}</div>`; }
+  h += `</div><div class="sec" style="margin-top:14px">${L.stats}</div><div class="card">
+   <div class="row"><span>${L.stTaps}</span><b>${group(s.taps)}</b></div><div class="row"><span>${L.stTime}</span><b>${fmtDur(s.playTime)}</b></div>
+   <div class="row"><span>${L.stVirals}</span><b>${s.virals}</b></div><div class="row"><span>${L.stPrest}</span><b>${s.prestiges}</b></div>
+   <div class="row"><span>${L.stBest}</span><b>${fmt(s.runEarned)}</b></div><div class="row"><span>${L.stLife}</span><b>${fmt(s.lifetime)}</b></div></div>`;
+  panel.innerHTML = h;
+}
+
+// ---------------- HUD update ----------------
+let lastPhase = 0;
+function phase() { if (C.prestigeGain(s) >= 1) return 3; if (C.lvl(s, 'manager') > 0 || s.gens.reduce((a, b) => a + b, 0) >= 10) return 2; return 1; }
+function updateUI(force) {
+  $('hype').textContent = fmt(s.hype);
+  const auto = C.autoRate(s) * C.tapValue(s);
+  $('ppsChip').textContent = '+' + fmt(C.pps(s) + auto) + L.perSec;
+  $('tapChip').textContent = '+' + fmt(C.tapValue(s)) + ' ' + L.perTap;
+  $('pubSub').textContent = '+' + fmt(C.tapValue(s));
+  const bc = $('badgeChip'); bc.hidden = s.badges === 0; if (s.badges) bc.textContent = `🏅 ${s.badges} · ×${fmtMult(C.globalMult(s))}`;
+  const ph = phase(); const pe = $('phase'); pe.className = 'p' + ph;
+  $('phaseName').textContent = L['phase' + ph];
+  if (ph === 1) $('phaseHint').textContent = L.phase1Hint;
+  else if (ph === 2) { const need = C.lifetimeForNextBadge(s) - s.lifetime; $('phaseHint').textContent = s.badgesEarned ? L.phase2HintAfter(fmt(need) + ' hype') : L.phase2Hint(fmt(need) + ' hype'); }
+  else $('phaseHint').textContent = L.phase3Hint;
+  if (lastPhase && ph > lastPhase) { toast(ph === 2 ? L.phaseUp2 : L.phaseUp3, 3500); SND.ach(); }
+  lastPhase = ph;
+  // tabs alerts
+  const tb = (t) => document.querySelector(`#tabs [data-tab=${t}]`);
+  const affG = CFG.gens.some((g, i) => genVisible(i) && s.hype >= C.genCost(s, i));
+  const affU = CFG.ups.some((u, i) => upVisible(i) && !C.upMaxed(s, i) && s.hype >= C.upCost(s, i));
+  tb('gens').classList.toggle('alert', affG && tab !== 'gens'); tb('ups').classList.toggle('alert', affU && tab !== 'ups');
+  tb('prestige').classList.toggle('pulse', ph === 3 && tab !== 'prestige'); tb('prestige').classList.toggle('alert', ph === 3);
+  tb('gens').classList.toggle('pulse', s.onb === 1 && tab !== 'gens');
+  // viral
+  const vb = $('viralBar');
+  if (s.viralLeft > 0) { vb.hidden = false; $('viralT').textContent = mmss(s.viralLeft); $('viralFill').style.width = Math.min(100, s.viralLeft / C.viralDuration(s) * 100) + '%'; document.body.classList.add('viral'); }
+  else { vb.hidden = true; document.body.classList.remove('viral'); }
+  if (wasViral && s.viralLeft <= 0) toast(L.viralEnd);
+  wasViral = s.viralLeft > 0;
+  // onboarding coach
+  const co = $('coach');
+  if (s.onb === 0 && s.taps >= 8) s.onb = 1;
+  if (s.onb === 1 && s.gens[0] > 0) { s.onb = 2; s.onbT = 7; }
+  if (s.onb === 2 && !(s.onbT > 0)) s.onb = 3;
+  let msg = '';
+  if (s.onb === 0) msg = L.coach0; else if (s.onb === 1 && s.hype >= CFG.gens[0].cost) msg = L.coach1; else if (s.onb === 2) msg = L.coach2;
+  co.hidden = !msg || s.viralLeft > 0; if (msg) co.textContent = msg;
+}
+function checkAch() {
+  for (const [id, , test] of ACH) if (!s.ach.includes(id) && test(s)) { s.ach.push(id); toast(`🏆 ${L.achGot} <b>${L.ach[id][0]}</b> · +1%`); SND.ach(); if (tab === 'ach') renderPanel(true); }
+}
+
+// ---------------- main loop ----------------
+let lastFrame = performance.now(), uiAcc = 0, achAcc = 0, saveAcc = 0;
+function handleGap(sec) {
+  if (sec <= 0) return;
+  if (sec >= 60) {
+    const vl = s.viralLeft; s.viralLeft = 0; const r = C.offline(s, sec); s.viralLeft = Math.max(0, vl - sec);
+    s.nextBubble = Math.min(s.nextBubble, 20 + Math.random() * 40);
+    if (r.gain > 0) welcomeBack(r);
+  } else { C.step(s, sec); }
+  s.last = Date.now(); dirty = true;
+}
+function frame(now) {
+  let dt = (now - lastFrame) / 1000; lastFrame = now;
+  const wall = (Date.now() - s.last) / 1000;
+  if (dt > 5 || wall > 5) { handleGap(Math.max(dt, wall)); dt = 0; }
+  dt = Math.min(Math.max(dt, 0), 1);
+  if (dt > 0) {
+    C.step(s, dt); s.last = Date.now();
+    if (s.onbT > 0) s.onbT -= dt;
+    if (bubbleLeft > 0) { bubbleLeft -= dt; if (bubbleLeft <= 0) hideBubble(); }
+    else if (s.viralLeft <= 0) { s.nextBubble -= dt; if (s.nextBubble <= 0) { spawnBubble(); s.nextBubble = C.bubbleInterval(s); } }
+  }
+  uiAcc += dt; achAcc += dt; saveAcc += dt;
+  if (uiAcc > 0.1 || dirty) { uiAcc = 0; dirty = false; updateUI(); renderPanel(false); refreshItems(); }
+  if (achAcc > 0.5) { achAcc = 0; checkAch(); }
+  if (saveAcc > 10) { saveAcc = 0; save(); }
+  requestAnimationFrame(frame);
+}
+document.addEventListener('visibilitychange', () => { if (document.hidden) save(); else { lastFrame = performance.now(); } });
+window.addEventListener('pagehide', save);
+
+// ---------------- debug (only with ?debug=1) ----------------
+function ff(sec) {
+  C.step(s, sec); s.last = Date.now();
+  if (s.viralLeft <= 0 && bubble.hidden) { s.nextBubble -= sec; if (s.nextBubble <= 0) { spawnBubble(); s.nextBubble = C.bubbleInterval(s); } }
+  dirty = true; checkAch(); updateUI(true); renderPanel(true);
+}
+if (DEBUG) {
+  window.HC = {
+    C, get s() { return s; }, ff, save, load, fmt, phase, doPrestige, tap: () => { const r = pub.getBoundingClientRect(); doTap(r.left + r.width / 2, r.top + r.height / 2); },
+    hideBubble, viral: () => startViral(), bubble: () => { s.nextBubble = 0; hideBubble(); spawnBubble(); },
+    addHype: (x) => { C.earn(s, x); dirty = true; },
+    readyPrestige: (n = 3) => { const need = Math.pow(s.badgesEarned + n, 2) * CFG.PRESTIGE_K; if (s.lifetime < need) C.earn(s, need - s.lifetime); dirty = true; renderPanel(true); },
+    offlineTest: (sec) => { s.last = Date.now() - sec * 1000; LS.set(KEY, JSON.stringify(s)); suppressSave = true; location.reload(); },
+    tab: (t) => document.querySelector(`#tabs [data-tab=${t}]`).click(),
+  };
+  const d = document.createElement('div'); d.id = 'dbg';
+  d.innerHTML = `<div class="p"><button data-d="m1">+1 min</button><button data-d="m10">+10 min</button><button data-d="h1">+1 h</button><button data-d="x100">hype ×100</button><button data-d="k">+10 tys.</button><button data-d="v">viral</button><button data-d="b">bańka</button><button data-d="p">prestiż gotowy</button><button data-d="o">offline 3h</button><button data-d="r">reset</button></div><button class="t">🐞 DEBUG</button>`;
+  document.body.appendChild(d);
+  d.querySelector('.t').onclick = () => d.classList.toggle('open');
+  d.querySelector('.p').onclick = (e) => {
+    const k = e.target.dataset.d; if (!k) return;
+    ({ m1: () => ff(60), m10: () => ff(600), h1: () => ff(3600), x100: () => window.HC.addHype(Math.max(1000, s.hype * 99)), k: () => window.HC.addHype(1e4), v: () => window.HC.viral(), b: () => window.HC.bubble(), p: () => window.HC.readyPrestige(3), o: () => window.HC.offlineTest(3 * 3600), r: () => { suppressSave = true; LS.del(KEY); location.reload(); } })[k]();
+  };
+}
+
+// ---------------- boot ----------------
+const lastSaved = load();
+applyLang();
+lastPhase = phase();
+if (lastSaved) { const gap = (Date.now() - lastSaved) / 1000; if (gap > 5) handleGap(gap); }
+s.last = Date.now();
+wasViral = s.viralLeft > 0;
+updateUI(true); renderPanel(true);
+requestAnimationFrame((t) => { lastFrame = t; requestAnimationFrame(frame); });
+})();
+</script>
+</body>
+</html>

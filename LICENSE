@@ -1,0 +1,15 @@
+Copyright (c) 2026 Stop60. All rights reserved.
+
+PROPRIETARY LICENCE – NOT OPEN SOURCE
+
+This repository and the game it contains ("Hype & Click: Algorytm Sławy"), including its code,
+texts, graphics, sounds and game design, are the property of Stop60 (rights holder).
+
+You may play the game for free in a web browser for personal, non-commercial use.
+Without prior written permission from Stop60 you may not copy, modify, redistribute,
+republish, sell, host elsewhere or create derivative works from any part of this repository.
+
+All sounds are generated procedurally at runtime (Web Audio API); no third-party audio,
+image or font assets are included. Emoji are rendered by the player's operating system.
+
+THE GAME IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
